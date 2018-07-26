@@ -25,3 +25,10 @@ the api is a boring `Stylesheet` tag.
   <span className='big'>what up what up</span>
 </Stylesheet>    
 ```
+
+
+todo 
+--- 
+
+- unload styles that aren't used 
+- tests etc etc 
