@@ -63,9 +63,9 @@ function LinkLoad(props: Sheet) {
   );
 }
 
-export function Stylesheet(props: Sheet & { children: Node, fallback?: Node }) {
+export function Stylesheet(props: Sheet & { children: Node, fallback?: Node, timeout?: number }) {
   return (
-    <React.Timeout ms={1000}>
+    <React.Timeout ms={typeof props.timeout === 'number' ? props.timeout : 1000 }>
       {expired => (expired ? props.fallback || null : <LinkLoad {...props} />)}
     </React.Timeout>
   );
