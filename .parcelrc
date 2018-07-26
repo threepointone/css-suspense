@@ -1,0 +1,6 @@
+{
+  "url-loader": {
+    "exts": ["css"],
+    "limit": 1
+  }
+}
