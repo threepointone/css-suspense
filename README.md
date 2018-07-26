@@ -17,7 +17,8 @@ api
 --- 
 
 the api is... a link tag! 
-```
+
+jsx```
 <Link href={require('./style.css')}>
   {/* this content will never load 
   until the stylesheet finishes loading */}
