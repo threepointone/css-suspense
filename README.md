@@ -19,9 +19,9 @@ api
 the api is a boring `StyleSheet` tag.
 
 ```jsx
-<Link href={require('./style.css')}>
+<StyleSheet href={require('./style.css')}>
   {/* this content will never load 
   until the stylesheet finishes loading */}
   <span className='big'>what up what up</span>
-</Link>    
+</StyleSheet>    
 ```
