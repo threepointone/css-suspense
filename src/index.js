@@ -63,7 +63,7 @@ function LinkLoad(props: Sheet) {
   );
 }
 
-export function Link(props: Sheet & { children: Node, fallback?: Node }) {
+export function Stylesheet(props: Sheet & { children: Node, fallback?: Node }) {
   return (
     <React.Timeout ms={1000}>
       {expired => (expired ? props.fallback || null : <LinkLoad {...props} />)}

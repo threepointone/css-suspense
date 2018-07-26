@@ -16,7 +16,7 @@ requirements
 api
 --- 
 
-the api is... a link tag! 
+the api is a boring `StyleSheet` tag.
 
 ```jsx
 <Link href={require('./style.css')}>
