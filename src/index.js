@@ -67,7 +67,7 @@ function LinkLoad(props: Sheet) {
 export function Stylesheet(props: Sheet & { children: Node, fallback?: Node, timeout?: number }) {
   return (
     <Placeholder 
-      ms={typeof props.timeout === 'number' ? props.timeout : 1000 }
+      delayMs={typeof props.timeout === 'number' ? props.timeout : 1000 }
       fallback={props.fallback}
     >
       <LinkLoad {...props} />

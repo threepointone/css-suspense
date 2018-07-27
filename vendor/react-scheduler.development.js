@@ -1,4 +1,4 @@
-/** @license React v16.4.0
+/** @license React v16.4.1
  * react-scheduler.development.js
  *
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -15,148 +15,7 @@
 	(factory((global.ReactScheduler = {})));
 }(this, (function (exports) { 'use strict';
 
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-
-
 var canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
-
-/**
- * Simple, lightweight module assisting with the detection and context of
- * Worker. Helps avoid circular dependencies and allows code to reason about
- * whether or not they are in a Worker, even if they never include the main
- * `ReactWorker` dependency.
- */
-var ExecutionEnvironment = {
-
-  canUseDOM: canUseDOM,
-
-  canUseWorkers: typeof Worker !== 'undefined',
-
-  canUseEventListeners: canUseDOM && !!(window.addEventListener || window.attachEvent),
-
-  canUseViewport: canUseDOM && !!window.screen,
-
-  isInWorker: !canUseDOM // For now, this is true - might change in the future.
-
-};
-
-var ExecutionEnvironment_1 = ExecutionEnvironment;
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * 
- */
-
-function makeEmptyFunction(arg) {
-  return function () {
-    return arg;
-  };
-}
-
-/**
- * This function accepts and discards inputs; it has no side effects. This is
- * primarily useful idiomatically for overridable function endpoints which
- * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
- */
-var emptyFunction = function emptyFunction() {};
-
-emptyFunction.thatReturns = makeEmptyFunction;
-emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
-emptyFunction.thatReturnsTrue = makeEmptyFunction(true);
-emptyFunction.thatReturnsNull = makeEmptyFunction(null);
-emptyFunction.thatReturnsThis = function () {
-  return this;
-};
-emptyFunction.thatReturnsArgument = function (arg) {
-  return arg;
-};
-
-var emptyFunction_1 = emptyFunction;
-
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-
-
-
-
-/**
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- */
-
-var warning = emptyFunction_1;
-
-{
-  var printWarning = function printWarning(format) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-
-    var argIndex = 0;
-    var message = 'Warning: ' + format.replace(/%s/g, function () {
-      return args[argIndex++];
-    });
-    if (typeof console !== 'undefined') {
-      console.error(message);
-    }
-    try {
-      // --- Welcome to debugging React ---
-      // This error was thrown as a convenience so that you can use this stack
-      // to find the callsite that caused this warning to fire.
-      throw new Error(message);
-    } catch (x) {}
-  };
-
-  warning = function warning(condition, format) {
-    if (format === undefined) {
-      throw new Error('`warning(condition, format, ...args)` requires a warning ' + 'message argument');
-    }
-
-    if (format.indexOf('Failed Composite propType: ') === 0) {
-      return; // Ignore CompositeComponent proptype check.
-    }
-
-    if (!condition) {
-      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
-        args[_key2 - 2] = arguments[_key2];
-      }
-
-      printWarning.apply(undefined, [format].concat(args));
-    }
-  };
-}
-
-var warning_1 = warning;
-
-// We capture a local reference to any global, in case it gets polyfilled after
-// this module is initially evaluated.
-// We want to be using a consistent implementation.
-var localRequestAnimationFrame = requestAnimationFrame;
-
-{
-  if (ExecutionEnvironment_1.canUseDOM && typeof localRequestAnimationFrame !== 'function') {
-    warning_1(false, 'React depends on requestAnimationFrame. Make sure that you load a ' + 'polyfill in older browsers. https://fb.me/react-polyfills');
-  }
-}
 
 /**
  * A scheduling library to allow scheduling work with more granular priority and
@@ -183,8 +42,19 @@ var localRequestAnimationFrame = requestAnimationFrame;
 // this module is initially evaluated.
 // We want to be using a consistent implementation.
 var localDate = Date;
-var localSetTimeout = setTimeout;
-var localClearTimeout = clearTimeout;
+
+// This initialization code may run even on server environments
+// if a component just imports ReactDOM (e.g. for findDOMNode).
+// Some environments might not have setTimeout or clearTimeout.
+// However, we always expect them to be defined on the client.
+// https://github.com/facebook/react/pull/13088
+var localSetTimeout = typeof setTimeout === 'function' ? setTimeout : undefined;
+var localClearTimeout = typeof clearTimeout === 'function' ? clearTimeout : undefined;
+
+// We don't expect either of these to necessarily be defined,
+// but we will error later if they are missing on the client.
+var localRequestAnimationFrame = typeof requestAnimationFrame === 'function' ? requestAnimationFrame : undefined;
+var localCancelAnimationFrame = typeof cancelAnimationFrame === 'function' ? cancelAnimationFrame : undefined;
 
 var hasNativePerformanceNow = typeof performance === 'object' && typeof performance.now === 'function';
 
@@ -203,7 +73,7 @@ if (hasNativePerformanceNow) {
 exports.scheduleWork = void 0;
 exports.cancelScheduledWork = void 0;
 
-if (!ExecutionEnvironment_1.canUseDOM) {
+if (!canUseDOM) {
   var timeoutIds = new Map();
 
   exports.scheduleWork = function (callback, options) {
@@ -233,6 +103,17 @@ if (!ExecutionEnvironment_1.canUseDOM) {
     localClearTimeout(timeoutId);
   };
 } else {
+  {
+    if (typeof console !== 'undefined') {
+      if (typeof localRequestAnimationFrame !== 'function') {
+        console.error("This browser doesn't support requestAnimationFrame. " + 'Make sure that you load a ' + 'polyfill in older browsers. https://fb.me/react-polyfills');
+      }
+      if (typeof localCancelAnimationFrame !== 'function') {
+        console.error("This browser doesn't support cancelAnimationFrame. " + 'Make sure that you load a ' + 'polyfill in older browsers. https://fb.me/react-polyfills');
+      }
+    }
+  }
+
   var headOfPendingCallbacksLinkedList = null;
   var tailOfPendingCallbacksLinkedList = null;
 
@@ -242,6 +123,27 @@ if (!ExecutionEnvironment_1.canUseDOM) {
 
   var isIdleScheduled = false;
   var isAnimationFrameScheduled = false;
+
+  // requestAnimationFrame does not run when the tab is in the background.
+  // if we're backgrounded we prefer for that work to happen so that the page
+  // continues	to load in the background.
+  // so we also schedule a 'setTimeout' as a fallback.
+  var animationFrameTimeout = 100;
+  var rafID = void 0;
+  var timeoutID = void 0;
+  var scheduleAnimationFrameWithFallbackSupport = function (callback) {
+    // schedule rAF and also a setTimeout
+    rafID = localRequestAnimationFrame(function (timestamp) {
+      // cancel the setTimeout
+      localClearTimeout(timeoutID);
+      callback(timestamp);
+    });
+    timeoutID = localSetTimeout(function () {
+      // cancel the requestAnimationFrame
+      localCancelAnimationFrame(rafID);
+      callback(exports.now());
+    }, animationFrameTimeout);
+  };
 
   var frameDeadline = 0;
   // We start out assuming that we run at 30fps but then the heuristic tracking
@@ -367,7 +269,7 @@ if (!ExecutionEnvironment_1.canUseDOM) {
       if (!isAnimationFrameScheduled) {
         // Schedule another animation callback so we retry later.
         isAnimationFrameScheduled = true;
-        localRequestAnimationFrame(animationTick);
+        scheduleAnimationFrameWithFallbackSupport(animationTick);
       }
     }
   };
@@ -438,7 +340,7 @@ if (!ExecutionEnvironment_1.canUseDOM) {
       // might want to still have setTimeout trigger scheduleWork as a backup to ensure
       // that we keep performing work.
       isAnimationFrameScheduled = true;
-      localRequestAnimationFrame(animationTick);
+      scheduleAnimationFrameWithFallbackSupport(animationTick);
     }
     return scheduledCallbackConfig;
   };
