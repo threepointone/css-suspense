@@ -1,14 +1,14 @@
 {
   "name": "css-suspense",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "lib/index.js",
   "license": "MIT",
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "flow-bin": "^0.77.0",
-    "parcel": "^1.9.7",
     "parcel-bundler": "^1.9.7",
     "parcel-plugin-url-loader": "^1.2.5"
   },
@@ -20,6 +20,7 @@
     "react-dom": "./vendor/react-dom.development.js"
   },
   "scripts": {
-    "start": "parcel example/index.html"
+    "start": "parcel example/index.html",
+    "build": "babel-cli src -d lib"
   }
 }

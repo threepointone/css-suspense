@@ -5,18 +5,13 @@ import { createCache, createResource } from "simple-cache-provider";
 
 const isBrowser = typeof window !== "undefined";
 
-function nullthrows(x) {
-  if (x === null || x === undefined) {
-    throw new Error("unexpected nullsy value");
-  }
-  return x;
-}
-
 type Sheet = {
   href: string,
   before?: HTMLElement,
   media?: string
 };
+
+const elements: { [href: string]: HTMLElement } = {};
 
 export function load(sheet: Sheet): Promise<void> {
   const { href, before, media = "all" } = sheet;
@@ -39,42 +34,44 @@ export function load(sheet: Sheet): Promise<void> {
       media
     });
 
-    nullthrows(ref.parentNode).insertBefore(
-      link,
-      before ? ref : ref.nextSibling
-    );
+    elements[href] = link;
+
+    ref.parentNode.insertBefore(link, before ? ref : ref.nextSibling);
   });
 }
 
-export const Resource = createResource(
+const Resource = createResource(
   load,
-  ({ href, media = "all" }) => href + media
+  ({ href, media = "all" }) => `${href}.${media}`
 );
 
 const cache = createCache();
 
+const ctr: { [name: string]: number } = {};
 
-function Link(props: Sheet & { children: Node }) {
-  Resource.read(cache, props);
-  const { children, ...rest } = props;
-  return (
-    <React.Fragment>
-      <link {...rest} />
-      {children}
-    </React.Fragment>
-  );
-}
-
-export function Stylesheet(
-  props: Sheet & { children: Node, fallback?: Node, timeout?: number }
-) {
-  const { fallback, timeout, ...rest } = props;
-  return (
-    <React.Placeholder
-      delayMs={typeof timeout === "number" ? timeout : 1000}
-      fallback={fallback}
-    >
-      <Link {...rest} />
-    </React.Placeholder>
-  );
+export class Stylesheet extends React.Component<Sheet & { children: Node }> {
+  componentDidMount() {
+    const { href } = this.props;
+    ctr[href] = ctr[href] || 0;
+    ctr[href]++;
+  }
+  componentWillUnmount() {
+    const { href } = this.props;
+    ctr[href]--;
+    if (ctr[href] === 0) {
+      elements[href].parentNode.removeChild(elements[href]);
+      delete elements[href];
+      // todo - invalidate cache
+    }
+  }
+  render() {
+    Resource.read(cache, this.props);
+    const { children, ...props } = this.props;
+    return (
+      <React.Fragment>
+        <link {...props} />
+        {children}
+      </React.Fragment>
+    );
+  }
 }

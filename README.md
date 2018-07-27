@@ -24,17 +24,11 @@ the api is a boring `Stylesheet` tag.
   until the stylesheet finishes loading */}
   <span className='big'>what up what up</span>
 </Stylesheet>  
-{/* any adjacent content will not render 
-until the stylesheet loads / times out */}
-<div>
-  ...footers and whatnot ...  
-</div>
-
 ```
 
 
 todo 
 --- 
 
-- unload styles that aren't used 
+- unload styles that aren't used (needs `SimpleCacheProvider::invalidate`)
 - tests etc etc 

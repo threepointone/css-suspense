@@ -4,11 +4,17 @@ import { Stylesheet } from "../src";
 
 function App() {
   return (
-    <Stylesheet href={require("./style.css")} fallback="loading...">
-      {/* this content shouldn't render
-      until the stylesheet finishes loading */}
-      <span className="big">what up what up</span>
-    </Stylesheet>
+    // $FlowFixMe
+    <React.Placeholder
+      delayMs={0}
+      fallback='loading...'
+    >
+      <Stylesheet href={require("./style.css")}>
+        {/* this content shouldn't render
+        until the stylesheet finishes loading */}
+        <span className="big">what up what up</span>
+      </Stylesheet>
+    </React.Placeholder>
   );
 }
 
