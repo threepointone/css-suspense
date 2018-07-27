@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "react-dom";
+import {unstable_createRoot as createRoot} from "react-dom";
 import { Stylesheet } from "../src";
 const AsyncMode = React.unstable_AsyncMode;
 
@@ -15,4 +15,4 @@ function App() {
   );
 }
 
-render(<App />, window.app);
+createRoot(window.app).render(<App />)

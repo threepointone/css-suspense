@@ -4,7 +4,7 @@ import React, { type Node } from "react";
 import { createCache, createResource } from "simple-cache-provider";
 
 const isBrowser = typeof window !== "undefined";
-const Placeholder = React.Placeholder;
+
 
 function nullthrows(x) {
   if (x === null || x === undefined) {
@@ -64,13 +64,15 @@ function LinkLoad(props: Sheet) {
   );
 }
 
-export function Stylesheet(props: Sheet & { children: Node, fallback?: Node, timeout?: number }) {
+export function Stylesheet(
+  props: Sheet & { children: Node, fallback?: Node, timeout?: number }
+) {
   return (
-    <Placeholder 
-      delayMs={typeof props.timeout === 'number' ? props.timeout : 1000 }
+    <React.Placeholder
+      delayMs={typeof props.timeout === "number" ? props.timeout : 1000}
       fallback={props.fallback}
     >
       <LinkLoad {...props} />
-    </Placeholder>
+    </React.Placeholder>
   );
 }
