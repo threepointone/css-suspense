@@ -3,7 +3,7 @@ css-suspense
 
 loading css files, the suspense way. 
 
-[(what is suspense?)](https://www.youtube.com/watch?v=v6iR3Zk4oDY)
+[(what is suspense?)](https://youtu.be/nLF0n9SACd4)
 
 requirements
 ---
