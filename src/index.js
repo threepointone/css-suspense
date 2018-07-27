@@ -5,7 +5,6 @@ import { createCache, createResource } from "simple-cache-provider";
 
 const isBrowser = typeof window !== "undefined";
 
-
 function nullthrows(x) {
   if (x === null || x === undefined) {
     throw new Error("unexpected nullsy value");
@@ -20,9 +19,9 @@ type Sheet = {
 };
 
 export function load(sheet: Sheet): Promise<void> {
-  if (!isBrowser) return;
   const { href, before, media = "all" } = sheet;
   return new Promise((onload, onerror) => {
+    if (!isBrowser) return;
     const link = document.createElement("link");
     let ref;
     if (before) {
@@ -51,9 +50,11 @@ export const Resource = createResource(
   load,
   ({ href, media = "all" }) => href + media
 );
+
 const cache = createCache();
 
-function LinkLoad(props: Sheet) {
+
+function Link(props: Sheet & { children: Node }) {
   Resource.read(cache, props);
   const { children, ...rest } = props;
   return (
@@ -67,12 +68,13 @@ function LinkLoad(props: Sheet) {
 export function Stylesheet(
   props: Sheet & { children: Node, fallback?: Node, timeout?: number }
 ) {
+  const { fallback, timeout, ...rest } = props;
   return (
     <React.Placeholder
-      delayMs={typeof props.timeout === "number" ? props.timeout : 1000}
-      fallback={props.fallback}
+      delayMs={typeof timeout === "number" ? timeout : 1000}
+      fallback={fallback}
     >
-      <LinkLoad {...props} />
+      <Link {...rest} />
     </React.Placeholder>
   );
 }

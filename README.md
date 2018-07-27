@@ -20,10 +20,16 @@ the api is a boring `Stylesheet` tag.
 
 ```jsx
 <Stylesheet href='/path/to/style.css'>
-  {/* this content will never load 
+  {/* this content will not render
   until the stylesheet finishes loading */}
   <span className='big'>what up what up</span>
-</Stylesheet>    
+</Stylesheet>  
+{/* any adjacent content will not render 
+until the stylesheet loads / times out */}
+<div>
+  ...footers and whatnot ...  
+</div>
+
 ```
 
 
