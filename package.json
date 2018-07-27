@@ -21,6 +21,6 @@
   },
   "scripts": {
     "start": "parcel example/index.html",
-    "build": "babel-cli src -d lib"
+    "build": "babel src -d lib"
   }
 }
