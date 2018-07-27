@@ -65,7 +65,7 @@ export class Stylesheet extends React.Component<Sheet & { children: Node }> {
     }
   }
   render() {
-    Resource.read(cache, this.props);
+    if (isBrowser) Resource.read(cache, this.props);
     const { children, ...props } = this.props;
     return (
       <React.Fragment>

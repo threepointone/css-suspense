@@ -5,10 +5,7 @@ import { Stylesheet } from "../src";
 function App() {
   return (
     // $FlowFixMe
-    <React.Placeholder
-      delayMs={0}
-      fallback='loading...'
-    >
+    <React.Placeholder delayMs={1000} fallback="loading...">
       <Stylesheet href={require("./style.css")}>
         {/* this content shouldn't render
         until the stylesheet finishes loading */}
