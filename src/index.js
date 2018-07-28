@@ -16,7 +16,6 @@ const elements: { [href: string]: HTMLElement } = {};
 export function load(sheet: Sheet): Promise<void> {
   const { href, before, media = "all" } = sheet;
   return new Promise((onload, onerror) => {
-    if (!isBrowser) return;
     const link = document.createElement("link");
     let ref;
     if (before) {
