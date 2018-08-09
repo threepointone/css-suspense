@@ -13,7 +13,7 @@ type Sheet = {
 
 const elements: { [href: string]: HTMLElement } = {};
 
-export function load(sheet: Sheet): Promise<void> {
+function load(sheet: Sheet): Promise<void> {
   const { href, before, media = "all" } = sheet;
   return new Promise((onload, onerror) => {
     const link = document.createElement("link");
@@ -46,23 +46,7 @@ const Resource = createResource(
 
 const cache = createCache();
 
-const ctr: { [name: string]: number } = {};
-
 export class Stylesheet extends React.Component<Sheet & { children: Node }> {
-  componentDidMount() {
-    const { href } = this.props;
-    ctr[href] = ctr[href] || 0;
-    ctr[href]++;
-  }
-  componentWillUnmount() {
-    const { href } = this.props;
-    ctr[href]--;
-    if (ctr[href] === 0) {
-      elements[href].parentNode.removeChild(elements[href]);
-      delete elements[href];
-      // todo - invalidate cache
-    }
-  }
   render() {
     if (isBrowser) Resource.read(cache, this.props);
     const { children, ...props } = this.props;
