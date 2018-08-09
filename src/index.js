@@ -11,8 +11,6 @@ type Sheet = {
   media?: string
 };
 
-const elements: { [href: string]: HTMLElement } = {};
-
 function load(sheet: Sheet): Promise<void> {
   const { href, before, media = "all" } = sheet;
   return new Promise((onload, onerror) => {
@@ -32,9 +30,7 @@ function load(sheet: Sheet): Promise<void> {
       onload,
       media
     });
-
-    elements[href] = link;
-
+    // $FlowFixMe
     ref.parentNode.insertBefore(link, before ? ref : ref.nextSibling);
   });
 }
@@ -46,15 +42,7 @@ const Resource = createResource(
 
 const cache = createCache();
 
-export class Stylesheet extends React.Component<Sheet & { children: Node }> {
-  render() {
-    if (isBrowser) Resource.read(cache, this.props);
-    const { children, ...props } = this.props;
-    return (
-      <React.Fragment>
-        <link {...props} />
-        {children}
-      </React.Fragment>
-    );
-  }
+export default function Stylesheet(props: Sheet) {
+  if (isBrowser) Resource.read(cache, props);
+  return <link {...props} />;
 }
