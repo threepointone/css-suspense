@@ -19,11 +19,10 @@ api
 the api is a boring `Stylesheet` tag.
 
 ```jsx
-<Stylesheet href='/path/to/style.css'>
-  {/* this content will not render
-  until the stylesheet finishes loading */}
-  <span className='big'>what up what up</span>
-</Stylesheet>  
+<Stylesheet href='/path/to/style.css'/>
+{/* this content will not render to dom
+  until the stylesheet finishes loading */}   
+<span className='big'>what up what up</span>
 ```
 
 
