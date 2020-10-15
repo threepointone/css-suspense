@@ -1,3 +1,9 @@
+*{
+  padding: 0;
+  margin: 0;
+  border-box: 0;
+}
+
 .big {
   font-weight:bold;
   font-size:100px;
